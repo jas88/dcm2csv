@@ -1,0 +1,65 @@
+on: push
+jobs:
+  buildtest:
+    name: Build, test and package
+    runs-on:  ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Cache Nuget dependencies
+        uses: actions/cache@v4
+        with:
+          key: ubuntu-latest-nuget
+          path: ~/.nuget/packages
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+          queries: +security-and-quality
+      - name: Git checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: .Net SDK
+        uses: actions/setup-dotnet@v4.3.0
+      - name: Build
+        run: dotnet build
+      - name: Test
+        if: false
+        run: dotnet test --collect:"XPlat Code Coverage" --results-directory coverage --nologo -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - name: Rename lcov
+        shell: bash
+        run: mv `find coverage -type f` all.lcov
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:csharp"
+      - name: Pack Nuget package
+        if: false
+        run: dotnet pack dcm2csv/dcm2csv.csproj -c Release -nologo -o dist
+      - name: Coveralls
+        if: false
+        uses: coverallsapp/github-action@v2.3.6
+        with:
+          github-token: ${{ secrets.github_token }}
+          path-to-lcov: all.lcov
+      - name: Archive production artifacts
+        if: false
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Upload built packages
+        uses: svenstaro/upload-release-action@2.9.0
+        if: false # contains(github.ref, 'refs/tags/v')
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+      - name: Upload Nuget package
+        if: false # contains(github.ref, 'refs/tags/v')
+        run: dotnet nuget push dist/*.nupkg -k ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json
