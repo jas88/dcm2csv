@@ -30,6 +30,7 @@ jobs:
         if: false
         run: dotnet test --collect:"XPlat Code Coverage" --results-directory coverage --nologo -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
       - name: Rename lcov
+        if: false
         shell: bash
         run: mv `find coverage -type f` all.lcov
       - name: Perform CodeQL Analysis
