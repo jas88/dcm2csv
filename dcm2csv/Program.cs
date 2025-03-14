@@ -1,5 +1,4 @@
-﻿
-using CsvHelper;
+﻿using CsvHelper;
 using FellowOakDicom;
 
 using var w = new CsvWriter(Console.Out, System.Globalization.CultureInfo.InvariantCulture);
