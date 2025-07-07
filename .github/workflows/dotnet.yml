@@ -53,7 +53,7 @@ jobs:
           name: dist
           path: dist
       - name: Upload built packages
-        uses: svenstaro/upload-release-action@2.10.0
+        uses: svenstaro/upload-release-action@2.11.2
         if: false # contains(github.ref, 'refs/tags/v')
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
