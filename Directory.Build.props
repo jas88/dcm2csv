@@ -1,0 +1,13 @@
+<Project>
+  <Import Project="build-standards/Directory.Build.props.shared" />
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
+    <Product>dcm2csv</Product>
+    <Copyright>Copyright 2025 James A Sutherland</Copyright>
+    <PackageProjectUrl>https://github.com/jas88/dcm2csv</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jas88/dcm2csv</RepositoryUrl>
+    <Description>DICOM to CSV converter</Description>
+  </PropertyGroup>
+</Project>

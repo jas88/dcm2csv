@@ -1,66 +1,73 @@
-on: push
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+  workflow_dispatch:
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  DOTNET_GENERATE_ASPNET_CERTIFICATE: false
+
 jobs:
-  buildtest:
-    name: Build, test and package
-    runs-on:  ubuntu-latest
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
+
     steps:
-      - name: Cache Nuget dependencies
-        uses: actions/cache@v4
-        with:
-          key: ubuntu-latest-nuget
-          path: ~/.nuget/packages
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
-        with:
-          languages: csharp
-          queries: +security-and-quality
-      - name: Git checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: .Net SDK
-        uses: actions/setup-dotnet@v5.0.1
-      - name: Build
-        run: dotnet build
-      - name: Test
-        if: false
-        run: dotnet test --collect:"XPlat Code Coverage" --results-directory coverage --nologo -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
-      - name: Rename lcov
-        if: false
-        shell: bash
-        run: mv `find coverage -type f` all.lcov
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
-        with:
-          category: "/language:csharp"
-      - name: Pack Nuget package
-        if: false
-        run: dotnet pack dcm2csv/dcm2csv.csproj -c Release -nologo -o dist
-      - name: Coveralls
-        if: false
-        uses: coverallsapp/github-action@v2.3.7
-        with:
-          github-token: ${{ secrets.github_token }}
-          path-to-lcov: all.lcov
-      - name: Archive production artifacts
-        if: false
-        uses: actions/upload-artifact@v5
-        with:
-          name: dist
-          path: dist
-      - name: Upload built packages
-        uses: svenstaro/upload-release-action@2.11.3
-        if: false # contains(github.ref, 'refs/tags/v')
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: dist/*
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
-      - name: Upload Nuget package
-        if: false # contains(github.ref, 'refs/tags/v')
-        run: dotnet nuget push dist/*.nupkg -k ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: recursive
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: global.json
+        cache: true
+        cache-dependency-path: '**/Directory.Packages.props'
+
+    - name: Initialize CodeQL
+      if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+      uses: github/codeql-action/init@v3
+      with:
+        languages: csharp
+        queries: security-extended,security-and-quality
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build solution
+      run: dotnet build --configuration Release --no-restore -p:ContinuousIntegrationBuild=true
+
+    - name: Perform CodeQL Analysis
+      if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:csharp"
+
+    - name: Run tests with coverage
+      run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults/
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./TestResults/**/coverage.cobertura.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+    - name: Run format check
+      run: dotnet format --verify-no-changes --verbosity diagnostic
