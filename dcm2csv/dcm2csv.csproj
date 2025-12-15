@@ -1,16 +1,12 @@
-<!--EXTERNAL_PROPERTIES: NETCoreAppMaximumVersion-->
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net$(NETCoreAppMaximumVersion)</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="33.1.0" />
-    <PackageReference Include="fo-dicom" Version="5.2.5" />
+    <PackageReference Include="CsvHelper" />
+    <PackageReference Include="fo-dicom" />
   </ItemGroup>
 
 </Project>
