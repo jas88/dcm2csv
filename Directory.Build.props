@@ -1,8 +1,8 @@
 <Project>
-  <Import Project="build-standards/Directory.Build.props.executable-repo" />
   <Import Project="build-standards/Directory.Build.props.shared" />
 
   <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
     <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
     <Product>dcm2csv</Product>
     <Copyright>Copyright 2025 James A Sutherland</Copyright>
