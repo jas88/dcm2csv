@@ -3,6 +3,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <EnableNUnitRunner>true</EnableNUnitRunner>
     <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
     <Product>dcm2csv</Product>
     <Copyright>Copyright 2025 James A Sutherland</Copyright>
