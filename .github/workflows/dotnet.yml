@@ -58,7 +58,8 @@ jobs:
         category: "/language:csharp"
 
     - name: Run tests with coverage
-      run: dotnet test --configuration Release --no-build --verbosity normal --coverage --coverage-output-format cobertura --results-directory ./TestResults/
+      # Settings file works around static instrumentation crash: https://github.com/microsoft/codecoverage/issues/203
+      run: dotnet test --configuration Release --no-build --verbosity normal --coverage --coverage-output-format cobertura --coverage-settings tests/coverage.settings --results-directory ./TestResults/
 
     - name: Upload coverage reports
       uses: codecov/codecov-action@v5
