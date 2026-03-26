@@ -62,7 +62,7 @@ jobs:
       run: dotnet test --configuration Release --no-build --verbosity normal --coverage --coverage-output-format cobertura --coverage-settings tests/coverage.settings --results-directory ./TestResults/
 
     - name: Upload coverage reports
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: ./TestResults/**/*.cobertura.xml
