@@ -8,7 +8,7 @@
   <ItemGroup>
     <!-- Production Dependencies -->
     <PackageVersion Include="CsvHelper" Version="33.1.0" />
-    <PackageVersion Include="fo-dicom" Version="5.2.5" />
+    <PackageVersion Include="fo-dicom" Version="5.2.6" />
 
     <!-- Test Dependencies -->
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.5" />
