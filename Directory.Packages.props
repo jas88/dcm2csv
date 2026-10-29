@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <!-- Production Dependencies -->
-    <PackageVersion Include="CsvHelper" Version="33.1.0" />
+    <PackageVersion Include="CsvHelper" Version="34.0.0" />
     <PackageVersion Include="fo-dicom" Version="5.2.6" />
 
     <!-- Test Dependencies -->
