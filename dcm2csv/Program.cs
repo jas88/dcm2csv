@@ -1,7 +1,7 @@
 using CsvHelper;
 using FellowOakDicom;
 
-using var w = new CsvWriter(Console.Out, System.Globalization.CultureInfo.InvariantCulture);
+using var w = CsvWriter.Create(Console.Out);
 w.WriteRecords(Directory.EnumerateFiles(".", "*.dcm", new EnumerationOptions
 {
     MatchCasing = MatchCasing.CaseInsensitive,
@@ -10,13 +10,14 @@ w.WriteRecords(Directory.EnumerateFiles(".", "*.dcm", new EnumerationOptions
     ReturnSpecialDirectories = false
 }).SelectMany(static dcm => DicomFile.Open(dcm).Dataset.SelectMany(t => Entry.ProcessTag(dcm, t))));
 
-internal sealed class Entry
+[CsvRecord]
+internal sealed partial class Entry
 {
     public string Id { get; }
     public string Name { get; }
     public string Value { get; }
 
-    private Entry(string id, string name, string value)
+    internal Entry([CsvColumn("Id")] string id, [CsvColumn("Name")] string name, [CsvColumn("Value")] string value)
     {
         Id = id;
         Name = name;
